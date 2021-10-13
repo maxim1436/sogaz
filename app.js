@@ -52,16 +52,18 @@ export default class Posts {
         this.posts.forEach(post => {
             const postElement = document.createElement('li');
             postElement.innerHTML = post.title;
+            postElement.setAttribute('id', post.id);
             postListElement.append(postElement);
-            const deleteElement = document.createElement('button');
-            deleteElement.innerHTML = 'X';
-            deleteElement.setAttribute('id', post.id);
-            //deleteElement.addEventListener('submit', (e) => {
-            //    this.delete(id);
-            //    this.print('postTitles');
-            //    e.preventDefault();
-            //})
-            postListElement.append(deleteElement);
+            const deleteListElement = document.createElement('button');
+            deleteListElement.innerHTML = 'X';
+            deleteListElement.setAttribute('id', post.id);
+            deleteListElement.addEventListener('click', (e) => {
+                this.delete(post.id);
+                document.getElementById(post.id).remove();
+                document.getElementById(post.id).remove();
+                e.preventDefault();
+            });
+            postListElement.append(deleteListElement);
         });
     }
 }
