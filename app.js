@@ -56,11 +56,11 @@ export default class Posts {
             const deleteElement = document.createElement('button');
             deleteElement.innerHTML = 'X';
             deleteElement.setAttribute('id', post.id);
-            deleteElement.addEventListener('submit', (e) => {
-                this.delete(id);
-                this.print('postTitles');
-                e.preventDefault();
-            })
+            //deleteElement.addEventListener('submit', (e) => {
+            //    this.delete(id);
+            //    this.print('postTitles');
+            //    e.preventDefault();
+            //})
             postListElement.append(deleteElement);
         });
     }
