@@ -1,5 +1,5 @@
 const url = 'https://jsonplaceholder.typicode.com/posts/';
-
+export const myPosts = null;
 async function getPosts() {
     const response = await fetch(url);
     return await response.json();
@@ -13,11 +13,12 @@ function createObjectsArray(posts) {
     return posts.map(i => ({
         title: i.title,
         body: i.body,
+        isUpdating: false,
         id: createId()
     }))
 };
 
-export default class Posts {
+export class Posts {
     constructor(posts) {
         this.posts = createObjectsArray(posts);
     }
@@ -26,13 +27,13 @@ export default class Posts {
         this.posts.push({ title, body, id: createId() });
     }
 
-    read(id) {
+    find(id) {
         return this.posts.find(i => i.id === id);
     }
-
-    update(id, data) {
+    update(data) {
         try {
-            const index = this.posts.findIndex(i => i.id === id);
+            let index = this.posts.findIndex(i => i.isUpdating === true);
+            // const index = this.posts.findIndex(i => i.id === id);
             if (!~index) throw new Error('Такого элемента нет!');
             if (!Object.keys(data).length) throw new Error('Не передаются данные!');
             const currentElement = this.posts[index];
@@ -48,31 +49,67 @@ export default class Posts {
     }
 
     print(parrentElementId) {
-        const postListElement =  document.getElementById(parrentElementId);
+        const postListElement = document.getElementById(parrentElementId);
         this.posts.forEach(post => {
             const postElement = document.createElement('li');
             postElement.innerHTML = post.title;
             postElement.setAttribute('id', post.id);
             postListElement.append(postElement);
-            const deleteListElement = document.createElement('button');
-            deleteListElement.innerHTML = 'X';
-            deleteListElement.setAttribute('id', post.id);
-            deleteListElement.addEventListener('click', (e) => {
+
+            const listItem = document.getElementById(post.id);
+            const deleteElement = document.createElement('button');
+            deleteElement.innerHTML = 'X';
+            deleteElement.addEventListener('click', (e) => {
                 this.delete(post.id);
-                document.getElementById(post.id).remove();
                 document.getElementById(post.id).remove();
                 e.preventDefault();
             });
-            postListElement.append(deleteListElement);
+            listItem.append(deleteElement);
+
+            const updateElement = document.createElement('button');
+            updateElement.innerHTML = 'update';
+            postElement.setAttribute('id', post.id);
+            updateElement.addEventListener('click', (e) => {
+                const a = document.getElementById('openModal');
+                a.style.display = "block";
+                post.isUpdating = true;
+                e.preventDefault();
+            });
+            listItem.append(updateElement);
+
+            document.getElementById('updatePost').addEventListener('submit', (e) => {
+                let post = this.posts.find(i => i.isUpdating === true);
+                let data = { title: document.getElementById('updateTitle').value, body: document.getElementById('updateBody').value };
+                this.update(post.id, data);
+                let a = document.getElementById('openModal');
+                a.style.display = "none";
+                document.getElementById('updateTitle').value = '';
+                document.getElementById('updateBody').value = '';
+                document.getElementById(post.id).innerHTML = this.find(post.id).title;
+                post.isUpdating = false;
+                listItem.append(deleteElement);
+                listItem.append(updateElement);
+                e.preventDefault();
+            });
         });
+
+        // document.getElementById('updatePost').addEventListener('submit', (e) => {
+        //     let post = this.posts.find(i => i.isUpdating === true);
+        //     let data = { title: document.getElementById('updateTitle').value, body: document.getElementById('updateBody').value };
+        //     this.update(post.id, data);
+        //     let a = document.getElementById('openModal');
+        //     a.style.display = "none";
+        //     document.getElementById('updateTitle').value = '';
+        //     document.getElementById('updateBody').value = '';
+        //     document.getElementById(post.id).innerHTML = this.find(post.id).title;
+        //     post.isUpdating = false;
+        // });
     }
 }
 
 const loadPosts = getPosts();
 loadPosts
     .then(data => {
-        return new Posts(data);
+        myPosts = new Posts(data);
+        myPosts.print('postTitles');
     })
-    .then(posts => {
-        posts.print('postTitles');
-    });
