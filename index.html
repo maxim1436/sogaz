@@ -85,15 +85,19 @@
         <input id="newBody" type="text" value="" required placeholder="Тело">
         <button id="createPost" type="submit">Отправить!</button>
     </form>
+    <input id="search" type="text" value="" required placeholder="Поиск">
     <div id="openModal" class="modalDialog">
         <div style="column-width: 100px;">
             <button id="close" href="#close" title="Закрыть" class="close">X</button>
             <form id="updatePost">
-                <input id="updateTitle" type="text" value="" required placeholder="Заголовок">
-                <textarea id="updateBody" type="text" value="" required placeholder="Тело"></textarea>
+                <input id="updateTitle" type="text" value="">
+                <textarea id="updateBody" type="text" value=""></textarea>
                 <button id="savePost" type="submit" class="save">V</button>
             </form>
         </div>
+    </div>
+    <div id="myLists">
+        <!-- <ol id="postTitles"></ol> -->
     </div>
     <ol id="postTitles"></ol>
     <script type="module" src="./app.js"></script>
