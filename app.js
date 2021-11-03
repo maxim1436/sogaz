@@ -1,30 +1,23 @@
-const url = 'https://jsonplaceholder.typicode.com/posts/';
-export const myPosts = null;
-async function getPosts() {
-    const response = await fetch(url);
-    return await response.json();
-}
+import { getPosts, createId, createObjectsArray, deletePostButton, updatePostButton } from './functions.js';
 
-function createId() {
-    return Math.random().toString(16);
-}
-
-function createObjectsArray(posts) {
-    return posts.map(i => ({
-        title: i.title,
-        body: i.body,
-        isUpdating: false,
-        id: createId()
-    }))
-};
+export let myPosts = null;
 
 export class Posts {
     constructor(posts) {
         this.posts = createObjectsArray(posts);
     }
 
-    create(title, body) {
-        this.posts.push({ title, body, id: createId() });
+    create(data) {
+        const { title, body } = data;
+        const id = createId();
+        this.posts.push({ title, body, id: id, isUpdating: false });
+        const list = document.getElementById('postTitles');
+        const post = document.createElement('li');
+        post.innerHTML = title;
+        post.setAttribute('id', id);
+        list.append(post);
+        deletePostButton(id);
+        updatePostButton(id);
     }
 
     find(id) {
@@ -33,11 +26,14 @@ export class Posts {
     update(data) {
         try {
             let index = this.posts.findIndex(i => i.isUpdating === true);
-            // const index = this.posts.findIndex(i => i.id === id);
             if (!~index) throw new Error('Такого элемента нет!');
             if (!Object.keys(data).length) throw new Error('Не передаются данные!');
             const currentElement = this.posts[index];
             Object.assign(currentElement, data);
+            document.getElementById(currentElement.id).innerHTML = currentElement.title;
+            currentElement.isUpdating = false;
+            deletePostButton(currentElement.id);
+            updatePostButton(currentElement.id);
         } catch (error) {
             return error;
         }
@@ -51,59 +47,13 @@ export class Posts {
     print(parrentElementId) {
         const postListElement = document.getElementById(parrentElementId);
         this.posts.forEach(post => {
-            const postElement = document.createElement('li');
-            postElement.innerHTML = post.title;
-            postElement.setAttribute('id', post.id);
-            postListElement.append(postElement);
-
-            const listItem = document.getElementById(post.id);
-            const deleteElement = document.createElement('button');
-            deleteElement.innerHTML = 'X';
-            deleteElement.addEventListener('click', (e) => {
-                this.delete(post.id);
-                document.getElementById(post.id).remove();
-                e.preventDefault();
-            });
-            listItem.append(deleteElement);
-
-            const updateElement = document.createElement('button');
-            updateElement.innerHTML = 'update';
-            postElement.setAttribute('id', post.id);
-            updateElement.addEventListener('click', (e) => {
-                const a = document.getElementById('openModal');
-                a.style.display = "block";
-                post.isUpdating = true;
-                e.preventDefault();
-            });
-            listItem.append(updateElement);
-
-            document.getElementById('updatePost').addEventListener('submit', (e) => {
-                let post = this.posts.find(i => i.isUpdating === true);
-                let data = { title: document.getElementById('updateTitle').value, body: document.getElementById('updateBody').value };
-                this.update(post.id, data);
-                let a = document.getElementById('openModal');
-                a.style.display = "none";
-                document.getElementById('updateTitle').value = '';
-                document.getElementById('updateBody').value = '';
-                document.getElementById(post.id).innerHTML = this.find(post.id).title;
-                post.isUpdating = false;
-                listItem.append(deleteElement);
-                listItem.append(updateElement);
-                e.preventDefault();
-            });
+            const element = document.createElement('li');
+            element.innerHTML = post.title;
+            element.setAttribute('id', post.id);
+            postListElement.append(element);
+            deletePostButton(post.id);
+            updatePostButton(post.id);
         });
-
-        // document.getElementById('updatePost').addEventListener('submit', (e) => {
-        //     let post = this.posts.find(i => i.isUpdating === true);
-        //     let data = { title: document.getElementById('updateTitle').value, body: document.getElementById('updateBody').value };
-        //     this.update(post.id, data);
-        //     let a = document.getElementById('openModal');
-        //     a.style.display = "none";
-        //     document.getElementById('updateTitle').value = '';
-        //     document.getElementById('updateBody').value = '';
-        //     document.getElementById(post.id).innerHTML = this.find(post.id).title;
-        //     post.isUpdating = false;
-        // });
     }
 }
 
