@@ -31,6 +31,8 @@ export class Posts {
             const currentElement = this.posts[index];
             Object.assign(currentElement, data);
             document.getElementById(currentElement.id).innerHTML = currentElement.title;
+            if(document.getElementById(`${currentElement.id}F`) !== null)
+                document.getElementById(`${currentElement.id}F`).innerHTML = currentElement.title;
             currentElement.isUpdating = false;
             deletePostButton(currentElement.id);
             updatePostButton(currentElement.id);
