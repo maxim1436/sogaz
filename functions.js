@@ -112,5 +112,5 @@ export function updatePostButton(id) {
         document.getElementById('updateBody').value = myPosts.find(id).body;
         e.preventDefault();
     });
-    listItem.append(updateElement);
+    listItem.append(updateElement)
 };
