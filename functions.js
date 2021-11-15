@@ -29,23 +29,41 @@ document.getElementById('close').addEventListener('click', (e) => {
 });
 
 document.getElementById('search').oninput = function() {
-    if (document.getElementById('filterList') !== null) document.getElementById('filterList').remove();
+    if (document.getElementById('filterList') !== null)
+        document.getElementById('filterList').remove();
     const postTitles = document.getElementById('postTitles');
     if (document.getElementById('search').value.length >= 1) {
         const filterList = document.createElement('ol');
         filterList.setAttribute('id', 'filterList');
         document.getElementById('myLists').append(filterList);
         const array = myPosts.posts.filter((i) => i.title.includes(document.getElementById('search').value));
-        console.log(array);
         postTitles.style.display = 'none';
         array.forEach(post => {
             let id = post.id;
             const element = document.createElement('li');
             element.innerHTML = post.title;
-            element.setAttribute('name', id);
+            element.setAttribute('id', `${id}F`);
             document.getElementById('filterList').append(element);
-            deletePostButton(id);
-            updatePostButton(id);
+            const deleteElement = document.createElement('button');
+            deleteElement.innerHTML = 'X';
+            deleteElement.addEventListener('click', (e) => {
+                myPosts.delete(id);
+                document.getElementById(`${id}F`).remove();
+                document.getElementById(id).remove();
+                e.preventDefault();
+            });
+            element.append(deleteElement);
+            const updateElement = document.createElement('button');
+            updateElement.innerHTML = 'update';
+            updateElement.addEventListener('click', (e) => {
+            const modalWindow = document.getElementById('openModal');
+            modalWindow.style.display = "block";
+            myPosts.find(id).isUpdating = true;
+            document.getElementById('updateTitle').value = myPosts.find(id).title;
+            document.getElementById('updateBody').value = myPosts.find(id).body;
+            e.preventDefault();
+            });
+            element.append(updateElement);
         });
     } else {
         postTitles.style.display = 'block';
